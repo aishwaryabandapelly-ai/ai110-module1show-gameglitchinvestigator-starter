@@ -1,0 +1,34 @@
+%% Game Glitch Investigator — project architecture
+%% Render at https://mermaid.live or with a Mermaid-compatible viewer.
+flowchart TD
+    User([Player]) -->|interacts with| App
+
+    subgraph UI["Streamlit App (app.py)"]
+        App["app.py<br/>UI, session state, game flow"]
+        Hist["render_guess_history()<br/>read-only Guess History + summary"]
+        Score["update_score()<br/>scoring logic"]
+        App --> Hist
+        App --> Score
+    end
+
+    subgraph Logic["Game Logic (logic_utils.py)"]
+        Range["get_range_for_difficulty()"]
+        Parse["parse_guess()"]
+        Check["check_guess()"]
+    end
+
+    subgraph Tests["Tests (tests/test_game_logic.py)"]
+        T["pytest: core logic + edge cases"]
+    end
+
+    App -->|imports| Range
+    App -->|imports| Parse
+    App -->|imports| Check
+    Hist -->|uses| Check
+
+    T -->|verifies| Range
+    T -->|verifies| Parse
+    T -->|verifies| Check
+
+    State[("st.session_state<br/>secret, attempts, score,<br/>status, history, difficulty")]
+    App <-->|reads / writes| State

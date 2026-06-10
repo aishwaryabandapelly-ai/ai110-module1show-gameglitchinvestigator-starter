@@ -1,0 +1,16 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.14.0, pytest-9.0.3, pluggy-1.6.0 -- /Users/aish/Desktop/ai110-module1show-gameglitchinvestigator-starter/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/aish/Desktop/ai110-module1show-gameglitchinvestigator-starter
+plugins: anyio-4.13.0
+collecting ... collected 7 items
+
+tests/test_game_logic.py::test_winning_guess PASSED                      [ 14%]
+tests/test_game_logic.py::test_guess_too_high_tells_player_to_go_lower PASSED [ 28%]
+tests/test_game_logic.py::test_guess_too_low_tells_player_to_go_higher PASSED [ 42%]
+tests/test_game_logic.py::test_difficulty_ranges PASSED                  [ 57%]
+tests/test_game_logic.py::test_parse_guess_decimal_truncates_toward_zero PASSED [ 71%]
+tests/test_game_logic.py::test_parse_guess_out_of_range_values_are_accepted PASSED [ 85%]
+tests/test_game_logic.py::test_parse_guess_empty_and_non_numeric_are_rejected PASSED [100%]
+
+============================== 7 passed in 0.01s ===============================
