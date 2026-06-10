@@ -23,7 +23,6 @@ Document at least 3 bugs you found. Add rows as needed.
 | Guessed 99 when the secret number was 37 | Since 99 is higher than 37, the game should say the guess is too high and tell me to go lower | The game said “Go HIGHER,” even though the guess was already higher than the secret number | none |
 | Selected Easy difficulty | The game should use the Easy range of 1–20 | Easy showed 1–20, but the gameplay did not always feel consistent with the selected range | none |
 | Selected Normal difficulty | The game should use the Normal range of 1–100 | Normal showed 1–100, but the game still had issues with attempts and hints | none |
-| Selected Hard difficulty | The game should use the Hard range of 1–200 | Hard should be 1–200, but the gameplay did not consistently follow the expected difficulty behavior | none |
 | Selected a difficulty that showed 6 attempts | The game should give exactly 6 attempts for that difficulty | The actual number of attempts was higher than the number listed before starting the game | none |
 | Clicked the New Game button | A fresh game should start with a new secret number, reset attempts, reset score, reset status, and clear history | The New Game button did not properly start a new game | none |
 | Ran out of attempts | The game should end only after the correct number of attempts and show the final result | It showed “Out of attempts! The secret was 37. Score: -5,” but the earlier hints were misleading | none |
