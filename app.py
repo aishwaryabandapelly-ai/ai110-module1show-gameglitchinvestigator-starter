@@ -1,25 +1,9 @@
 import random
 import streamlit as st
 
-from logic_utils import check_guess, get_range_for_difficulty
-
-
-def parse_guess(raw: str):
-    if raw is None:
-        return False, None, "Enter a guess."
-
-    if raw == "":
-        return False, None, "Enter a guess."
-
-    try:
-        if "." in raw:
-            value = int(float(raw))
-        else:
-            value = int(raw)
-    except Exception:
-        return False, None, "That is not a number."
-
-    return True, value, None
+# FIX: Used the AI coding assistant to refactor check_guess (and get_range_for_difficulty)
+# out of app.py and into logic_utils.py, then import them back here.
+from logic_utils import check_guess, get_range_for_difficulty, parse_guess
 
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
@@ -38,6 +22,40 @@ def update_score(current_score: int, outcome: str, attempt_number: int):
         return current_score - 5
 
     return current_score
+
+
+def render_guess_history():
+    """Render previous guesses and a short session summary.
+
+    Display-only: this reads from session state and never mutates the
+    secret, score, attempts, or status, so it cannot affect the core game
+    logic. Directional outcomes are only shown when the "Show hint" option
+    is enabled, matching the hint toggle used during play.
+    """
+    st.subheader("📜 Guess History")
+
+    history = st.session_state.history
+    if not history:
+        st.write("No guesses yet — make your first guess above!")
+    else:
+        for position, past_guess in enumerate(history, start=1):
+            if isinstance(past_guess, int):
+                if show_hint:
+                    outcome, _ = check_guess(past_guess, st.session_state.secret)
+                    st.write(f"{position}. **{past_guess}** — {outcome}")
+                else:
+                    st.write(f"{position}. **{past_guess}**")
+            else:
+                st.write(f"{position}. ⚠️ Invalid entry: {past_guess!r}")
+
+    attempts_left = max(attempt_limit - st.session_state.attempts, 0)
+    st.caption(
+        f"Difficulty: {difficulty} ({low}–{high})  ·  "
+        f"Guesses made: {len(history)}  ·  "
+        f"Attempts left: {attempts_left}  ·  "
+        f"Score: {st.session_state.score}"
+    )
+
 
 st.set_page_config(page_title="Glitchy Guesser", page_icon="🎮")
 
@@ -68,6 +86,8 @@ if "secret" not in st.session_state:
     st.session_state.secret = random.randint(low, high)
 
 if "attempts" not in st.session_state:
+    # FIX: AI helped identify the off-by-one bug where attempts started at 1
+    # (showing 7 left on Normal); attempts now start at 0.
     st.session_state.attempts = 0
 
 if "score" not in st.session_state:
@@ -82,6 +102,8 @@ if "history" not in st.session_state:
 if "difficulty" not in st.session_state:
     st.session_state.difficulty = difficulty
 
+# FIX: AI helped spot stale difficulty state — changing difficulty kept the old
+# secret/range, so we now reset the game when the selected difficulty changes.
 if st.session_state.difficulty != difficulty:
     st.session_state.difficulty = difficulty
     st.session_state.secret = random.randint(low, high)
@@ -92,6 +114,8 @@ if st.session_state.difficulty != difficulty:
 
 st.subheader("Make a guess")
 
+# FIX: AI helped catch the hardcoded "1 and 100" range text; it now shows the
+# selected difficulty's actual range dynamically.
 st.info(
     f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
@@ -118,6 +142,8 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
+    # FIX: AI helped fix the New Game button to fully reset state — secret (using
+    # the selected difficulty range), attempts, score, status, and history.
     st.session_state.secret = random.randint(low, high)
     st.session_state.attempts = 0
     st.session_state.score = 0
@@ -131,6 +157,7 @@ if st.session_state.status != "playing":
         st.success("You already won. Start a new game to play again.")
     else:
         st.error("Game over. Start a new game to try again.")
+    render_guess_history()
     st.stop()
 
 if submit:
@@ -172,6 +199,8 @@ if submit:
                     f"The secret was {st.session_state.secret}. "
                     f"Score: {st.session_state.score}"
                 )
+
+render_guess_history()
 
 st.divider()
 st.caption("Built by an AI that claims this code is production-ready.")
